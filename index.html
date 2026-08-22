@@ -13,9 +13,37 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       padding: 50px 20px;
     }
-    header { text-align: center; margin-bottom: 50px; }
+    header { text-align: center; margin-bottom: 30px; }
     h1 { font-weight: 300; letter-spacing: 3px; font-size: 1.8rem; }
     p.sub { color: #999; margin-top: 8px; font-size: 0.95rem; }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+    .filters button {
+      background: #1a1a1a;
+      color: #ccc;
+      border: 1px solid #333;
+      padding: 8px 18px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+    }
+    .filters button:hover {
+      border-color: #666;
+      color: #fff;
+    }
+    .filters button.active {
+      background: #fff;
+      color: #0e0e0e;
+      border-color: #fff;
+    }
 
     .gallery {
       display: grid;
@@ -32,6 +60,7 @@
       cursor: pointer;
       aspect-ratio: 3 / 2;
     }
+    .gallery figure.hidden { display: none; }
     .gallery img {
       width: 100%;
       height: 100%;
@@ -104,20 +133,30 @@
     <p class="sub">Photographie animalière &amp; paysage</p>
   </header>
 
+  <div class="filters" id="filters">
+    <button data-filter="all" class="active">Tous</button>
+    <button data-filter="paysage">Paysage</button>
+    <button data-filter="macro">Macro</button>
+    <button data-filter="oiseaux">Oiseaux</button>
+    <button data-filter="mammiferes">Mammifères</button>
+    <button data-filter="insectes">Insectes</button>
+  </div>
+
   <div class="gallery" id="gallery">
     <!--
       Pour chaque photo, ajoute un bloc <figure> comme ci-dessous.
+      - data-category sur <figure> : paysage / macro / oiseaux / mammiferes / insectes
       - src : chemin vers photos/nom-du-fichier.jpg
       - alt : description réelle (espèce, lieu) pour l'accessibilité et le référencement
       - data-caption : légende affichée dans la vue agrandie (peut être identique à alt)
     -->
-<figure>
+<figure data-category="paysage">
   <img src="photos/PaysageSavoieJuillet2026.jpg" alt="Montagne au ciel rose" loading="lazy" data-caption="Montagne, ciel">
 </figure>
-<figure>
+<figure data-category="paysage">
   <img src="photos/PaysageSavoieJuillet2026-2.jpg" alt="Levé de soleil sur le lac" loading="lazy" data-caption="Lac">
 </figure>
-<figure>
+<figure data-category="paysage">
   <img src="photos/PaysageSavoieJuillet2026-3.jpg" alt="Rayon de soleil sur la vallée" loading="lazy" data-caption="Soleil, vallée">
 </figure>
   </div>
@@ -132,12 +171,36 @@
   </div>
 
   <script>
-    const images = Array.from(document.querySelectorAll('.gallery img'));
+    const gallery = document.getElementById('gallery');
+    const filterButtons = document.querySelectorAll('.filters button');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const caption = document.getElementById('lightbox-caption');
     let currentIndex = 0;
 
+    // Récupère uniquement les photos actuellement visibles (non filtrées)
+    function getVisibleImages() {
+      return Array.from(gallery.querySelectorAll('figure:not(.hidden) img'));
+    }
+
+    // Filtres
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+
+        gallery.querySelectorAll('figure').forEach(fig => {
+          if (filter === 'all' || fig.dataset.category === filter) {
+            fig.classList.remove('hidden');
+          } else {
+            fig.classList.add('hidden');
+          }
+        });
+      });
+    });
+
+    // Lightbox
     function openLightbox(index) {
       currentIndex = index;
       updateLightbox();
@@ -145,6 +208,7 @@
     }
 
     function updateLightbox() {
+      const images = getVisibleImages();
       const img = images[currentIndex];
       lightboxImg.src = img.src;
       lightboxImg.alt = img.alt;
@@ -155,16 +219,23 @@
       lightbox.classList.remove('active');
     }
 
-    images.forEach((img, index) => {
-      img.parentElement.addEventListener('click', () => openLightbox(index));
+    gallery.addEventListener('click', (e) => {
+      const figure = e.target.closest('figure');
+      if (!figure || figure.classList.contains('hidden')) return;
+      const images = getVisibleImages();
+      const clickedImg = figure.querySelector('img');
+      const index = images.indexOf(clickedImg);
+      if (index !== -1) openLightbox(index);
     });
 
     document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
     document.getElementById('lightbox-prev').addEventListener('click', () => {
+      const images = getVisibleImages();
       currentIndex = (currentIndex - 1 + images.length) % images.length;
       updateLightbox();
     });
     document.getElementById('lightbox-next').addEventListener('click', () => {
+      const images = getVisibleImages();
       currentIndex = (currentIndex + 1) % images.length;
       updateLightbox();
     });
