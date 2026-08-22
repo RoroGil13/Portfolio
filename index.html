@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Romain Gillet — Portfolio Photo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #0e0e0e;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 50px 20px;
+    }
+    header { text-align: center; margin-bottom: 50px; }
+    h1 { font-weight: 300; letter-spacing: 3px; font-size: 1.8rem; }
+    p.sub { color: #999; margin-top: 8px; font-size: 0.95rem; }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .gallery figure {
+      position: relative;
+      overflow: hidden;
+      border-radius: 6px;
+      background: #1a1a1a;
+      cursor: pointer;
+      aspect-ratio: 3 / 2;
+    }
+    .gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .gallery figure:hover img { transform: scale(1.04); }
+
+    /* Lightbox */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+    }
+    #lightbox.active { display: flex; }
+    #lightbox img {
+      max-width: 92vw;
+      max-height: 88vh;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+    #lightbox-caption {
+      position: absolute;
+      bottom: 25px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+    #lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 2rem;
+      color: #fff;
+      cursor: pointer;
+      background: none;
+      border: none;
+      line-height: 1;
+    }
+    #lightbox-prev, #lightbox-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2.5rem;
+      cursor: pointer;
+      padding: 10px 18px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    #lightbox-prev:hover, #lightbox-next:hover { opacity: 1; }
+    #lightbox-prev { left: 10px; }
+    #lightbox-next { right: 10px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>ROMAIN GILLET</h1>
+    <p class="sub">Photographie animalière &amp; paysage</p>
+  </header>
+
+  <div class="gallery" id="gallery">
+    <!--
+      Pour chaque photo, ajoute un bloc <figure> comme ci-dessous.
+      - src : chemin vers photos/nom-du-fichier.jpg
+      - alt : description réelle (espèce, lieu) pour l'accessibilité et le référencement
+      - data-caption : légende affichée dans la vue agrandie (peut être identique à alt)
+    -->
+    <figure>
+      <img src="photos/photo1.jpg" alt="Chevreuil dans une clairière, Camargue" loading="lazy" data-caption="Chevreuil, Camargue">
+    </figure>
+    <figure>
+      <img src="photos/photo2.jpg" alt="Héron cendré au bord de l'eau" loading="lazy" data-caption="Héron cendré">
+    </figure>
+    <figure>
+      <img src="photos/photo3.jpg" alt="Paysage de garrigue au lever du soleil" loading="lazy" data-caption="Garrigue, lever du jour">
+    </figure>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox">
+    <button id="lightbox-close" aria-label="Fermer">&times;</button>
+    <button id="lightbox-prev" aria-label="Précédent">&#8249;</button>
+    <img id="lightbox-img" src="" alt="">
+    <button id="lightbox-next" aria-label="Suivant">&#8250;</button>
+    <div id="lightbox-caption"></div>
+  </div>
+
+  <script>
+    const images = Array.from(document.querySelectorAll('.gallery img'));
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const caption = document.getElementById('lightbox-caption');
+    let currentIndex = 0;
+
+    function openLightbox(index) {
+      currentIndex = index;
+      updateLightbox();
+      lightbox.classList.add('active');
+    }
+
+    function updateLightbox() {
+      const img = images[currentIndex];
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt;
+      caption.textContent = img.dataset.caption || img.alt;
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+    }
+
+    images.forEach((img, index) => {
+      img.parentElement.addEventListener('click', () => openLightbox(index));
+    });
+
+    document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+    document.getElementById('lightbox-prev').addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      updateLightbox();
+    });
+    document.getElementById('lightbox-next').addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % images.length;
+      updateLightbox();
+    });
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') document.getElementById('lightbox-prev').click();
+      if (e.key === 'ArrowRight') document.getElementById('lightbox-next').click();
+    });
+  </script>
+
+</body>
+</html>
