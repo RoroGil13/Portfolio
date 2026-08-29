@@ -17,6 +17,64 @@
     h1 { font-weight: 300; letter-spacing: 3px; font-size: 1.8rem; }
     p.sub { color: #999; margin-top: 8px; font-size: 0.95rem; }
 
+    .section-title {
+      text-align: center;
+      font-weight: 300;
+      letter-spacing: 1.5px;
+      font-size: 1.1rem;
+      color: #ccc;
+      margin: 50px 0 25px;
+      text-transform: uppercase;
+    }
+    .section-title:first-of-type { margin-top: 0; }
+
+    /* --- Albums (ensembles) --- */
+    .albums-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 45px 25px;
+      max-width: 1100px;
+      margin: 0 auto 20px;
+    }
+    .album-card {
+      cursor: pointer;
+      text-align: center;
+    }
+    .album-stack {
+      position: relative;
+      height: 150px;
+      margin-bottom: 16px;
+    }
+    .album-stack img {
+      position: absolute;
+      width: 82%;
+      left: 9%;
+      height: 120px;
+      top: 14px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 3px solid #0e0e0e;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+      transition: transform 0.25s ease;
+    }
+    .album-stack img:nth-child(1) { transform: rotate(-7deg); z-index: 1; }
+    .album-stack img:nth-child(2) { transform: rotate(4deg); z-index: 2; }
+    .album-stack img:nth-child(3) { transform: rotate(-1deg); z-index: 3; top: 0; }
+    .album-card:hover .album-stack img:nth-child(1) { transform: rotate(-11deg) translateY(-3px); }
+    .album-card:hover .album-stack img:nth-child(2) { transform: rotate(7deg) translateY(-3px); }
+    .album-card:hover .album-stack img:nth-child(3) { transform: rotate(-1deg) translateY(-6px); }
+    .album-title {
+      color: #ddd;
+      font-size: 0.9rem;
+      letter-spacing: 0.3px;
+    }
+    .album-count {
+      color: #777;
+      font-size: 0.78rem;
+      margin-top: 3px;
+    }
+
+    /* --- Filtres catégories --- */
     .filters {
       display: flex;
       flex-wrap: wrap;
@@ -138,9 +196,15 @@
 
   <header>
     <h1>ROMAIN GILLET</h1>
-    <p class="sub">Portfolio de photographie animalière, paysagère et macro</p>
+    <p class="sub">Portfolio de photographie animalière, paysagère, urbaine et macro</p>
   </header>
 
+  <h2 class="section-title">Sorties &amp; Ensembles</h2>
+  <div class="albums-grid" id="albumsGrid">
+    <!-- Généré automatiquement par le script à partir des attributs data-album des photos -->
+  </div>
+
+  <h2 class="section-title">Toutes les photos</h2>
   <div class="filters" id="filters">
     <button data-filter="all" class="active">Tous</button>
     <button data-filter="paysage">Paysage</button>
@@ -148,48 +212,96 @@
     <button data-filter="oiseaux">Oiseaux</button>
     <button data-filter="mammiferes">Mammifères</button>
     <button data-filter="insectes">Insectes</button>
+    <button data-filter="urbaine">Urbaine</button>
   </div>
 
   <div class="gallery" id="gallery">
     <!--
       Pour chaque photo, ajoute un bloc <figure> comme ci-dessous.
-      - data-category sur <figure> : paysage / macro / oiseaux / mammiferes / insectes
+      - data-category : paysage / macro / oiseaux / mammiferes / insectes
+      - data-album : nom de la sortie/ensemble auquel elle appartient (texte libre, ex: "Sortie Vercors — 2025")
+        Deux photos avec le même data-album se retrouvent groupées dans le même "ensemble".
       - src : chemin vers photos/nom-du-fichier.jpg
-      - alt : description réelle (espèce, lieu) pour l'accessibilité et le référencement
-      - data-caption : légende affichée dans la vue agrandie (peut être identique à alt)
+      - alt : description réelle (espèce, lieu)
+      - data-caption : légende affichée dans la vue agrandie
     -->
-<figure data-category="paysage">
+<figure data-category="paysage" data-album="Sortie Savoie — Juillet 2026">
   <img src="photos/PaysageSavoieJuillet2026.jpg" alt="Montagne au ciel rose" loading="lazy" data-caption="Montagne, ciel">
 </figure>
-<figure data-category="paysage">
+<figure data-category="paysage" data-album="Sortie Savoie — Juillet 2026">
   <img src="photos/PaysageSavoieJuillet2026-2.jpg" alt="Levé de soleil sur le lac" loading="lazy" data-caption="Lac">
 </figure>
-<figure data-category="paysage">
+<figure data-category="paysage" data-album="Sortie Savoie — Juillet 2026">
   <img src="photos/PaysageSavoieJuillet2026-3.jpg" alt="Rayon de soleil sur la vallée" loading="lazy" data-caption="Soleil, vallée">
 </figure>
-    <figure data-category="mammiferes">
+<figure data-category="mammiferes" data-album="Sortie Vercors — 2025">
   <img src="photos/BouquetinVercors2025.jpg" alt="Bouquetin" loading="lazy" data-caption="Bouquetin, Vercors">
 </figure>
-<figure data-category="mammiferes">
+<figure data-category="mammiferes" data-album="Sortie Vercors — 2025">
   <img src="photos/BouquetinVercors2025-2.jpg" alt="Bouquetin" loading="lazy" data-caption="Bouquetin, Vercors">
 </figure>
-<figure data-category="oiseaux">
+<figure data-category="oiseaux" data-album="Sortie Vercors — 2025">
   <img src="photos/BouquetinVercors2025-3.jpg" alt="Chocard à bec jaune" loading="lazy" data-caption="Chocard à bec jaune, Vercors">
 </figure>
-    <figure data-category="insectes">
+<figure data-category="insectes" data-album="Sortie macro — 2025">
   <img src="photos/DianeSortieSolidage2025.jpg" alt="Le papillon Diane" loading="lazy" data-caption="La Diane">
 </figure>
-    <figure data-category="paysage">
+<figure data-category="paysage" data-album="Mont Blanc — Juillet 2026">
   <img src="photos/MontBlancJuillet2026-2.jpg" alt="Le Mont Blanc" loading="lazy" data-caption="Le Mont Blanc vu du Cheval Noir">
 </figure>
-    <figure data-category="paysage">
-  <img src="photos/Photo Saint Francois Longchamp 2026.jpg" alt="Saint François Longchamp" loading="lazy" data-caption="Silence après l'orage, Saint François Longchamp">
+<figure data-category="oiseaux" data-album="Sortie Camargue — Juillet 2026">
+  <img src="photos/CamargueJuillet2026.jpg" alt="Oiseau en Camargue" loading="lazy" data-caption="Camargue">
+</figure>
+<figure data-category="oiseaux" data-album="Sortie Camargue — Juillet 2026">
+  <img src="photos/CamargueJuillet2026-2.jpg" alt="Oiseau en Camargue" loading="lazy" data-caption="Camargue">
+</figure>
+<figure data-category="oiseaux" data-album="Sortie Camargue — Juillet 2026">
+  <img src="photos/CamargueJuillet2026-3.jpg" alt="Oiseau en Camargue" loading="lazy" data-caption="Camargue">
+</figure>
+<figure data-category="oiseaux" data-album="Sortie Camargue — Juillet 2026">
+  <img src="photos/CamargueJuillet2026-4.jpg" alt="Oiseau en Camargue" loading="lazy" data-caption="Camargue">
+</figure>
+<figure data-category="oiseaux" data-album="Sortie Camargue — Juillet 2026">
+  <img src="photos/CamargueJuillet2026-5.jpg" alt="Oiseau en Camargue" loading="lazy" data-caption="Camargue">
+</figure>
+<figure data-category="oiseaux" data-album="Sortie Camargue — Juillet 2026">
+  <img src="photos/CamargueJuillet2026-6.jpg" alt="Oiseau en Camargue" loading="lazy" data-caption="Camargue">
+</figure>
+<figure data-category="oiseaux" data-album="Sortie Camargue — Juillet 2026">
+  <img src="photos/CamargueJuillet2026-7.jpg" alt="Oiseau en Camargue" loading="lazy" data-caption="Camargue">
+</figure>
+<figure data-category="oiseaux" data-album="Sortie Camargue — Juillet 2026">
+  <img src="photos/CamargueJuillet2026-8.jpg" alt="Oiseau en Camargue" loading="lazy" data-caption="Camargue">
+</figure>
+<figure data-category="oiseaux" data-album="Sortie Camargue — Juillet 2026">
+  <img src="photos/CamargueJuillet2026-9.jpg" alt="Oiseau en Camargue" loading="lazy" data-caption="Camargue">
+</figure>
+<figure data-category="oiseaux" data-album="Sortie Camargue — Juillet 2026">
+  <img src="photos/CamargueJuillet2026-10.jpg" alt="Oiseau en Camargue" loading="lazy" data-caption="Camargue">
+</figure>
+<figure data-category="oiseaux" data-album="Sortie Camargue — Juillet 2026">
+  <img src="photos/CamargueJuillet2026-11.jpg" alt="Oiseau en Camargue" loading="lazy" data-caption="Camargue">
+</figure>
+<figure data-category="paysage" data-album="Orage — Août 2026, Avignon">
+  <img src="photos/OrageAout2026Avignon.jpg" alt="Orage au-dessus d'Avignon" loading="lazy" data-caption="Orage, Avignon">
+</figure>
+<figure data-category="paysage" data-album="Orage — Août 2026, Avignon">
+  <img src="photos/OrageAout2026Avignon-2.jpg" alt="Orage au-dessus d'Avignon" loading="lazy" data-caption="Orage, Avignon">
+</figure>
+<figure data-category="paysage" data-album="Orage — Août 2026, Avignon">
+  <img src="photos/OrageAout2026Avignon-3.jpg" alt="Orage au-dessus d'Avignon" loading="lazy" data-caption="Orage, Avignon">
+</figure>
+<figure data-category="paysage" data-album="Orage — Août 2026, Avignon">
+  <img src="photos/OrageAout2026Avignon-4.jpg" alt="Orage au-dessus d'Avignon" loading="lazy" data-caption="Orage, Avignon">
+</figure>
+<figure data-category="paysage" data-album="Saint François Longchamp — 2026">
+  <img src="photos/Photo%20Saint%20Francois%20Longchamp%202026.jpg" alt="Paysage à Saint François Longchamp" loading="lazy" data-caption="Saint François Longchamp">
 </figure>
   </div>
 
   <footer>&copy; Romain Gillet — Toute reproduction ou utilisation sans autorisation est interdite.</footer>
 
-  <!-- Lightbox -->
+  <!-- Lightbox / Visionneuse -->
   <div id="lightbox">
     <button id="lightbox-close" aria-label="Fermer">&times;</button>
     <button id="lightbox-prev" aria-label="Précédent">&#8249;</button>
@@ -204,14 +316,61 @@
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const caption = document.getElementById('lightbox-caption');
-    let currentIndex = 0;
+    const albumsGrid = document.getElementById('albumsGrid');
 
-    // Récupère uniquement les photos actuellement visibles (non filtrées)
+    let currentIndex = 0;
+    let activeImageSet = []; // le tableau d'images actuellement navigué dans la lightbox (galerie filtrée OU album)
+
+    // --- Construction des ensembles (albums) à partir des data-album des photos ---
+    function buildAlbums() {
+      const figures = Array.from(gallery.querySelectorAll('figure'));
+      const albumsMap = {};
+      figures.forEach(fig => {
+        const name = fig.dataset.album;
+        if (!name) return;
+        if (!albumsMap[name]) albumsMap[name] = [];
+        albumsMap[name].push(fig.querySelector('img'));
+      });
+
+      Object.entries(albumsMap).forEach(([name, imgs]) => {
+        const card = document.createElement('div');
+        card.className = 'album-card';
+
+        const stack = document.createElement('div');
+        stack.className = 'album-stack';
+        imgs.slice(0, 3).forEach(img => {
+          const thumb = document.createElement('img');
+          thumb.src = img.src;
+          thumb.alt = '';
+          stack.appendChild(thumb);
+        });
+
+        const title = document.createElement('div');
+        title.className = 'album-title';
+        title.textContent = name;
+
+        const count = document.createElement('div');
+        count.className = 'album-count';
+        count.textContent = imgs.length + (imgs.length > 1 ? ' photos' : ' photo');
+
+        card.appendChild(stack);
+        card.appendChild(title);
+        card.appendChild(count);
+        card.addEventListener('click', () => {
+          activeImageSet = imgs;
+          openLightbox(0);
+        });
+
+        albumsGrid.appendChild(card);
+      });
+    }
+
+    // Récupère uniquement les photos actuellement visibles dans la galerie (non filtrées)
     function getVisibleImages() {
       return Array.from(gallery.querySelectorAll('figure:not(.hidden) img'));
     }
 
-    // Filtres
+    // Filtres catégories
     filterButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         filterButtons.forEach(b => b.classList.remove('active'));
@@ -236,8 +395,7 @@
     }
 
     function updateLightbox() {
-      const images = getVisibleImages();
-      const img = images[currentIndex];
+      const img = activeImageSet[currentIndex];
       lightboxImg.src = img.src;
       lightboxImg.alt = img.alt;
       caption.textContent = img.dataset.caption || img.alt;
@@ -250,21 +408,19 @@
     gallery.addEventListener('click', (e) => {
       const figure = e.target.closest('figure');
       if (!figure || figure.classList.contains('hidden')) return;
-      const images = getVisibleImages();
+      activeImageSet = getVisibleImages();
       const clickedImg = figure.querySelector('img');
-      const index = images.indexOf(clickedImg);
+      const index = activeImageSet.indexOf(clickedImg);
       if (index !== -1) openLightbox(index);
     });
 
     document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
     document.getElementById('lightbox-prev').addEventListener('click', () => {
-      const images = getVisibleImages();
-      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      currentIndex = (currentIndex - 1 + activeImageSet.length) % activeImageSet.length;
       updateLightbox();
     });
     document.getElementById('lightbox-next').addEventListener('click', () => {
-      const images = getVisibleImages();
-      currentIndex = (currentIndex + 1) % images.length;
+      currentIndex = (currentIndex + 1) % activeImageSet.length;
       updateLightbox();
     });
 
@@ -279,12 +435,17 @@
       if (e.key === 'ArrowRight') document.getElementById('lightbox-next').click();
     });
 
-    // Empêche le clic droit (menu "Enregistrer l'image") et le glisser-déposer
-    // sur toutes les images du site, y compris dans la lightbox.
-    document.querySelectorAll('img').forEach(img => {
-      img.addEventListener('contextmenu', (e) => e.preventDefault());
-      img.addEventListener('dragstart', (e) => e.preventDefault());
-    });
+    // Empêche le clic droit et le glisser-déposer sur toutes les images
+    document.addEventListener('DOMContentLoaded', () => {});
+    function disableImageDrag() {
+      document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('contextmenu', (e) => e.preventDefault());
+        img.addEventListener('dragstart', (e) => e.preventDefault());
+      });
+    }
+
+    buildAlbums();
+    disableImageDrag();
   </script>
 
 </body>
